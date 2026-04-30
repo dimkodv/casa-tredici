@@ -258,7 +258,7 @@ let Layout = function () {
         document.querySelectorAll('.icon--sound').forEach(el => el.classList.add('is-paused'));
       }
     };
-    // 2. Глобальная разблокировка при первом клике (везде)
+
     const unlockAudio = () => {
       if (isInitialized) return;
 
@@ -268,19 +268,16 @@ let Layout = function () {
         window.removeEventListener('touchstart', unlockAudio);
         document.querySelectorAll('.icon--sound').forEach(el => el.classList.add('is-active'));
       }).catch(() => {
-        // Если заблокировано, ждем клика по иконке
       });
     };
-
+    unlockAudio();
     window.addEventListener('click', unlockAudio);
     window.addEventListener('touchstart', unlockAudio);
 
-    // 3. Привязка события конкретно к иконкам
     document.addEventListener('click', (e) => {
-      // Проверяем, нажат ли элемент с классом .icon--sound или его потомок
       const soundBtn = e.target.closest('.icon--sound');
       if (soundBtn) {
-        e.preventDefault(); // Чтобы не срабатывал скролл или переход по ссылке
+        e.preventDefault();
         toggleAudio();
       }
     });
