@@ -5,11 +5,7 @@
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        // 1. Анимируем сам футер (появление/исчезновение)
         entry.target.classList.toggle(footerVisibleClass, entry.isIntersecting);
-
-        // 2. Управляем хедером: если футер виден (isIntersecting: true),
-        // добавляем хедеру класс скрытия.
         if (header) {
           header.classList.toggle(headerHiddenClass, entry.isIntersecting);
         }
@@ -73,7 +69,6 @@
 
     init() {
       const firstImg = new Image();
-      // Загружаем только 1-й кадр сразу, чтобы пользователь что-то видел
       firstImg.src = this.path?.replace('???', '000');
       firstImg.onload = () => {
         this.canvas.width = firstImg.width;
@@ -81,14 +76,10 @@
         this.images[0] = firstImg;
         this.render();
         this.canvas.classList.add('is-loaded');
-
-        // КЛЮЧЕВОЙ МОМЕНТ: Ждем 2 секунды (пока грузится остальной сайт)
-        // и только потом начинаем качать пачку из 300 кадров
         setTimeout(() => this.preloadInChunks(1, 10), 2000);
       };
     }
 
-    // Метод для поочередной загрузки кадров
     async preloadInChunks(startIndex, chunkSize) {
       if (this.isPreloaded) return;
 
@@ -96,13 +87,11 @@
         const batch = [];
 
         for (let j = i; j < i + chunkSize && j <= this.totalFrames; j++) {
-          // Пропускаем первый кадр, так как он уже загружен в init()
+      
           if (j === 1 && this.images[0]) continue;
 
           const img = new Image();
           img.src = this.path.replace('???', j.toString().padStart(3, '0'));
-
-          // Помещаем промис загрузки в массив
           batch.push(
             img.decode()
               .then(() => {
@@ -113,11 +102,8 @@
               })
           );
         }
-
-        // Ждем, пока текущая пачка из 10 картинок загрузится, прежде чем брать следующую
         await Promise.all(batch);
 
-        // Небольшая пауза 50мс между пачками, чтобы дать браузеру обработать другие задачи
         await new Promise(resolve => setTimeout(resolve, 50));
       }
 
@@ -145,7 +131,6 @@
       if (delta > interval) {
         this.then = now - (delta % interval);
 
-        // Проверяем, загружен ли следующий кадр, прежде чем менять индекс
         let nextFrame = this.currentFrame + this.direction;
         if (this.images[nextFrame] && this.images[nextFrame].complete) {
           this.currentFrame = nextFrame;
@@ -523,8 +508,8 @@
   });
 
   // Init
-  const chairVideo = new FrameSequence({ selector: '#chair-canvas', path: './images/chair-frames3/frame_???.webp', totalFrames: 241, fps: 24 });
-  const chairVideo2 = new FrameSequence({ selector: '#chair-canvas2', path: './images/seq_480/frame_???.webp', totalFrames: 483, fps: 24 });
+  const chairVideo = new FrameSequence({ selector: '#chair-canvas', path: 'https://raw.githubusercontent.com/dimkodv/casa-tredici/main/images/chair-frames3/frame_???.webp', totalFrames: 241, fps: 24 });
+  const chairVideo2 = new FrameSequence({ selector: '#chair-canvas2', path: 'https://raw.githubusercontent.com/dimkodv/casa-tredici/main/images/seq_480/frame_???.webp', totalFrames: 483, fps: 24 });
   updateUI(0);
 
   // Utility for viewport scaling
