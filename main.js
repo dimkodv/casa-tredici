@@ -5,7 +5,10 @@
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
+        // 1. Анимируем сам футер (появление/исчезновение)
         entry.target.classList.toggle(footerVisibleClass, entry.isIntersecting);
+
+        // 2. Управляем хедером: если футер виден (isIntersecting: true),
         if (header) {
           header.classList.toggle(headerHiddenClass, entry.isIntersecting);
         }
@@ -69,6 +72,7 @@
 
     init() {
       const firstImg = new Image();
+      // Загружаем только 1-й кадр сразу, чтобы пользователь что-то видел
       firstImg.src = this.path?.replace('???', '000');
       firstImg.onload = () => {
         this.canvas.width = firstImg.width;
@@ -76,10 +80,14 @@
         this.images[0] = firstImg;
         this.render();
         this.canvas.classList.add('is-loaded');
+
+        // КЛЮЧЕВОЙ МОМЕНТ: Ждем 2 секунды (пока грузится остальной сайт)
+        // и только потом начинаем качать пачку из 300 кадров
         setTimeout(() => this.preloadInChunks(1, 10), 2000);
       };
     }
 
+    // Метод для поочередной загрузки кадров
     async preloadInChunks(startIndex, chunkSize) {
       if (this.isPreloaded) return;
 
@@ -87,11 +95,13 @@
         const batch = [];
 
         for (let j = i; j < i + chunkSize && j <= this.totalFrames; j++) {
-      
+          // Пропускаем первый кадр, так как он уже загружен в init()
           if (j === 1 && this.images[0]) continue;
 
           const img = new Image();
           img.src = this.path.replace('???', j.toString().padStart(3, '0'));
+
+          // Помещаем промис загрузки в массив
           batch.push(
             img.decode()
               .then(() => {
@@ -102,8 +112,11 @@
               })
           );
         }
+
+        // Ждем, пока текущая пачка из 10 картинок загрузится, прежде чем брать следующую
         await Promise.all(batch);
 
+        // Небольшая пауза 50мс между пачками, чтобы дать браузеру обработать другие задачи
         await new Promise(resolve => setTimeout(resolve, 50));
       }
 
@@ -131,6 +144,7 @@
       if (delta > interval) {
         this.then = now - (delta % interval);
 
+        // Проверяем, загружен ли следующий кадр, прежде чем менять индекс
         let nextFrame = this.currentFrame + this.direction;
         if (this.images[nextFrame] && this.images[nextFrame].complete) {
           this.currentFrame = nextFrame;
@@ -267,19 +281,42 @@
     { pos: 15000, sel: '.italy-icon', cls: 'is-visible_' },
 
     { pos: 15100, sel: '.slideC', cls: 'is-hidden-up' },
-    { pos: 15100, sel: '.slideD', cls: 'is-visible' },
-    { pos: 15100, sel: '.slideD-text-top p', cls: 'is-visible' },
-    { pos: 15500, sel: '.slideD-bg-img', cls: 'is-dark' },
-    { pos: 15500, sel: '.slideD-bg img', cls: 'is-moved' },
-    { pos: 15500, sel: '.slideD .slideD-text-top', cls: 'is-moved' },
-    { pos: 15500, sel: '.slideD-text-bottom p', cls: 'is-visible' },
-    { pos: 15500, sel: '.slideD-shadow-bottom', cls: 'is-visible' },
-    // { pos: 15870, sel: '.slideD-text-bottom', cls: 'is-moved-1' },
-    { pos: 16100, sel: '.slideD-bg img', cls: 'is-moved-2' },
-    { pos: 16100, sel: '.slideD .slideD-text-top', cls: 'is-hidden-up' },
-    { pos: 16170, sel: '.main-page .footer-wg', cls: 'is-visible' },
-    { pos: 16170, sel: '.slideD-text-bottom', cls: 'is-moved-3' },
-    { pos: 16170, sel: '.slideD-bg .shadow--mob', cls: 'is-visible' },
+
+    { pos: 15100, sel: '.slideAR', cls: 'is-visible' },
+    { pos: 15100, sel: '.slideAR-text p', cls: 'is-visible' },
+    { pos: 15100, sel: '.slideAR .media-section', cls: 'is-visible' },
+
+    { pos: 15600, sel: '.slideAR', cls: 'is-hidden-up' },
+    { pos: 15600, sel: '.slideAR-text p', cls: 'is-hidden-up' },
+    { pos: 15600, sel: '.slideAR .media-section', cls: 'is-hidden-up' },
+
+    { pos: 15600, sel: '.slideD', cls: 'is-visible' },
+    { pos: 15600, sel: '.slideD-text-top p', cls: 'is-visible' },
+    { pos: 16000, sel: '.slideD-bg-img', cls: 'is-dark' },
+    { pos: 16000, sel: '.slideD-bg img', cls: 'is-moved' },
+    { pos: 16000, sel: '.slideD .slideD-text-top', cls: 'is-moved' },
+    { pos: 16000, sel: '.slideD-text-bottom p', cls: 'is-visible' },
+    { pos: 16000, sel: '.slideD-shadow-bottom', cls: 'is-visible' },
+    // { pos: 16370, sel: '.slideD-text-bottom', cls: 'is-moved-1' },
+    { pos: 16600, sel: '.slideD-bg img', cls: 'is-moved-2' },
+    { pos: 16600, sel: '.slideD .slideD-text-top', cls: 'is-hidden-up' },
+    { pos: 16670, sel: '.main-page .footer-wg', cls: 'is-visible' },
+    { pos: 16670, sel: '.slideD-text-bottom', cls: 'is-moved-3' },
+    { pos: 16670, sel: '.slideD-bg .shadow--mob', cls: 'is-visible' },
+
+    // { pos: 15100, sel: '.slideD', cls: 'is-visible' },
+    // { pos: 15100, sel: '.slideD-text-top p', cls: 'is-visible' },
+    // { pos: 15500, sel: '.slideD-bg-img', cls: 'is-dark' },
+    // { pos: 15500, sel: '.slideD-bg img', cls: 'is-moved' },
+    // { pos: 15500, sel: '.slideD .slideD-text-top', cls: 'is-moved' },
+    // { pos: 15500, sel: '.slideD-text-bottom p', cls: 'is-visible' },
+    // { pos: 15500, sel: '.slideD-shadow-bottom', cls: 'is-visible' },
+    // // { pos: 15870, sel: '.slideD-text-bottom', cls: 'is-moved-1' },
+    // { pos: 16100, sel: '.slideD-bg img', cls: 'is-moved-2' },
+    // { pos: 16100, sel: '.slideD .slideD-text-top', cls: 'is-hidden-up' },
+    // { pos: 16170, sel: '.main-page .footer-wg', cls: 'is-visible' },
+    // { pos: 16170, sel: '.slideD-text-bottom', cls: 'is-moved-3' },
+    // { pos: 16170, sel: '.slideD-bg .shadow--mob', cls: 'is-visible' },
 
     // about page
     { pos: 100, sel: '.aboutSlide1', cls: 'is-moved' },
@@ -398,7 +435,7 @@
     if (nextIndex < 0 || nextIndex >= scrollSteps.length) return;
 
     const nextPos = scrollSteps[nextIndex];
-    if ((isHomePage && nextPos > 16170) || (isAboutPage && nextPos > 3100)) return;
+    if ((isHomePage && nextPos > 16670) || (isAboutPage && nextPos > 3100)) return;
 
     isAnimating = true;
     currentStepIndex = nextIndex;
@@ -508,8 +545,8 @@
   });
 
   // Init
-  const chairVideo = new FrameSequence({ selector: '#chair-canvas', path: 'https://raw.githubusercontent.com/dimkodv/casa-tredici/main/images/chair-frames3/frame_???.webp', totalFrames: 241, fps: 24 });
-  const chairVideo2 = new FrameSequence({ selector: '#chair-canvas2', path: 'https://raw.githubusercontent.com/dimkodv/casa-tredici/main/images/seq_480/frame_???.webp', totalFrames: 483, fps: 24 });
+  const chairVideo = new FrameSequence({ selector: '#chair-canvas', path: './images/chair-frames3/frame_???.webp', totalFrames: 241, fps: 24 });
+  const chairVideo2 = new FrameSequence({ selector: '#chair-canvas2', path: './images/seq_480/frame_???.webp', totalFrames: 483, fps: 24 });
   updateUI(0);
 
   // Utility for viewport scaling
