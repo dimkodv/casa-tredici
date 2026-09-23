@@ -545,8 +545,8 @@
   });
 
   // Init
-  const chairVideo = new FrameSequence({ selector: '#chair-canvas', path: './images/chair-frames3/frame_???.webp', totalFrames: 241, fps: 24 });
-  const chairVideo2 = new FrameSequence({ selector: '#chair-canvas2', path: './images/seq_480/frame_???.webp', totalFrames: 483, fps: 24 });
+  const chairVideo = new FrameSequence({ selector: '#chair-canvas', path: 'https://raw.githubusercontent.com/dimkodv/casa-tredici/main/images/chair-frames3/frame_???.webp', totalFrames: 241, fps: 24 });
+  const chairVideo2 = new FrameSequence({ selector: '#chair-canvas2', path: 'https://raw.githubusercontent.com/dimkodv/casa-tredici/main/images/seq_480/frame_???.webp', totalFrames: 483, fps: 24 });
   updateUI(0);
 
   // Utility for viewport scaling
