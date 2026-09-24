@@ -565,6 +565,12 @@
     }
   });
 
+  if (isHomePage && window.location.hash.toLowerCase() === '#media') {
+    setTimeout(() => {
+      window.jumpToPos(15100);
+    }, 100);
+  }
+
   // Init
   const chairVideo = new FrameSequence({ selector: '#chair-canvas', path: 'https://raw.githubusercontent.com/dimkodv/casa-tredici/main/images/chair-frames3/frame_???.webp', totalFrames: 241, fps: 24 });
   const chairVideo2 = new FrameSequence({ selector: '#chair-canvas2', path: 'https://raw.githubusercontent.com/dimkodv/casa-tredici/main/images/seq_480/frame_???.webp', totalFrames: 483, fps: 24 });
