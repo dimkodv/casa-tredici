@@ -429,6 +429,15 @@
     manageVideo(y, 1100, 4600, '.aboutSlide3-video');
   };
 
+  window.jumpToPos = function(targetY) {
+    virtualY = targetY;
+    currentStepIndex = scrollSteps.findLastIndex(s => s <= virtualY);
+    if (currentStepIndex === -1) currentStepIndex = 0;
+    velocity = 0;
+    isAnimating = false;
+    updateUI(virtualY);
+  };
+
   const goToStep = (direction) => {
     if (isAnimating) return;
     const nextIndex = currentStepIndex + direction;
@@ -542,6 +551,18 @@
   window.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowDown' || e.key === 'ArrowRight') goToStep(1);
     if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') goToStep(-1);
+  });
+
+    // --- MEDIA LINK ROUTING ---
+  document.addEventListener('click', (e) => {
+    const mediaLink = e.target.closest('a[href*="#media"]');
+    if (!mediaLink) return;
+
+    if (isHomePage) {
+      e.preventDefault();
+      window.jumpToPos(15100);
+      history.pushState(null, null, '#media');
+    }
   });
 
   // Init
